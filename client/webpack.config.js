@@ -4,15 +4,15 @@ var path = require('path');
 module.exports = {
 
   context: __dirname,
+
   entry: {
-    'bundle': './src/index.js'
+    app: ["./app/main.js"]
   },
 
   output: {
-    path: path.join(__dirname, "./dist"),
-    filename: "bundle.js",
-    publicPath: "/assets/"
-    //filename: "[name]/[hash].bundle.js"
+    path: "./build",
+    publicPath: "/assets/",
+    filename: "bundle.js"
   },
 
   resolve: {
