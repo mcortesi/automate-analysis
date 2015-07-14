@@ -1,4 +1,5 @@
 import React from 'react';
+
 import Granularity from '../enums/granularity';
 import Dimentions from '../enums/dimentions';
 
@@ -34,10 +35,10 @@ class FormSelect extends React.Component {
 export default class SearchForm extends React.Component {
 
   _getFormData(form, values) {
-    data = {}
+    const data = {}
 
     values.forEach((id) => {
-      data[id] = e.target[id].value
+      data[id] = form[id].value
     })
 
     return data;
@@ -45,11 +46,12 @@ export default class SearchForm extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault()
+    const formData = this._getFormData(e.target, ['botId', 'granularity', 'dimentions', 'from', 'to'])
+    this.props.onSubmit(formData)
   }
 
   render() {
-    return  <form onSubmit={this.handleSubmit} role="form">
-              <span>{this.state.status.message}</span>
+    return  <form onSubmit={this.handleSubmit.bind(this)} role="form">
               <FormInput id="botId" type="text" label="Bot id:"/>
               <FormSelect id="granularity" options={Granularity} label="Granularity:"/>
               <FormSelect id="dimentions" options={Dimentions} label="Dimentions:"/>

@@ -3,8 +3,9 @@ import SearchForm from './SearchForm';
 
 export default class App extends React.Component {
 
-  getInitialState() {
-    return {
+  constructor(props) {
+    super(props);
+    this.state = {
       params: null,
       status: {
         empty: true,
@@ -20,7 +21,7 @@ export default class App extends React.Component {
 
 
   render() {
-    return <SearchForm params={this.state.params} status={this.state.status}/>;
+    return <SearchForm params={this.state.params} onSubmit={this.searchParams.bind(this)}/>;
   }
 }
 
