@@ -6,9 +6,9 @@ import App from './components/App';
 
 main();
 
-
 function main() {
     var app = document.createElement('div');
+    app.classList.add('container');
     document.body.appendChild(app);
 
     React.render(<App />, app);
