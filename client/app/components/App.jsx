@@ -1,73 +1,51 @@
 import React from 'react';
 import SearchForm from './SearchForm';
 
+import store from '../stores/appStore';
+import createDispatcher from '../actions/dispatcher';
+
+const {dispatch, subscribe} = createDispatcher(store, initialState())
+
 export default class App extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      params: null,
-      status: {
-        empty: true,
-        message: 'Ready to do some queries?'
-      },
-      result: null
-    }
+    this.state = initialState();
   }
 
-  searchParams(params) {
-    this.setState({params: params})
+  componentWillMount() {
+    this.unsubscribe = subscribe(this.setState.bind(this));
   }
 
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
 
   render() {
-    return <SearchForm params={this.state.params} onSubmit={this.searchParams.bind(this)}/>;
+    return <div>
+             <h1>{this.state.status.message}</h1>
+             <hr/>
+             <SearchForm onSearch={this.handleNewSearch.bind(this)}/>
+             <div>{JSON.stringify(this.state)}</div>
+           </div>
   }
+
+  handleNewSearch(searchParams) {
+    dispatch({ type: 'setSearchParams', searchParams: searchParams });
+    dispatch({ type: 'doRequest', botId: searchParams.botId });
+  }
+
 }
 
 
-/*
-search: {
 
- params: {
-   bots: []
-   dimentions: []
-   range: {
-     from: Date
-     to: Date
-   },
-   granularity: Granularity.types
- },
-
- status: {
-   empty: | error: | fetching: | ok:
-   message:
- },
-
- result: {
-
-  description: {
-    bots: []
-    dimentions: []
-    range: {
-      from: Date
-      to: Date
+function initialState() {
+  return {
+    params: null,
+    status: {
+      empty: true,
+      message: 'Ready to do some queries?'
     },
-    effectiveRange: {
-      from: Date
-      to: Date
-    },
-    granularity: Granularity.types
-  },
-
-  data: {
-    123: {},
-    2323: {}
+    result: null
   }
-
- }
-
-},
-
-
-*/
+}
