@@ -88,12 +88,13 @@
     ))
 
 
-(def bot "54c7c8bb7365df0300d56bcd")
-(def from (tf/parse date-formatter "201502101645"))
-(def to (t/plus from (t/hours 4)))
+;; Example:
+;; (def bot "54c7c8bb7365df0300d56bcd")
+;; (def from (tf/parse date-formatter "201502101645"))
+;; (def to (t/plus from (t/hours 4)))
 
-(get-stats-data-series bot
-                       :kinds [:accepted :rejected]
-                       :from from
-                       :to to
-                       :granularity :minutes)
+;; (get-stats-data-series bot
+;;                        :kinds [:accepted :rejected]
+;;                        :from from
+;;                        :to to
+;;                        :granularity :minutes)

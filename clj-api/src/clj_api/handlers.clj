@@ -8,20 +8,6 @@
    [ring.middleware.json :as middleware]
    [clj-time.format :as tf]))
 
-;(defn retain
-;  [& [url id :as args]]
-;  (if-let [id (apply shorten! args)]
-;    {:status 201
-;     :headers {"Location" id}
-;     :body (list "URL " url " assigned the short identifier " id)}
-;    {:status 409 :body (format "Short URL %s is already taken" id)}))
-
-(defn hello [name]
-  {
-    :status 200
-    :body (str "Hello " name ", urray!")
-  }
-)
 
 (defn truncate-to [date dimension]
   (let
@@ -32,6 +18,7 @@
          :days    (fn [d] (.dayOfMonth d)))]
 
   (-> date get-property .roundFloorCopy)))
+
 
 (defn tr-dimension [dimension-param]
   (case dimension-param
@@ -99,18 +86,7 @@
 ))
 
 
-;; (def fake-params {:bots "123124"
-;;                   :granularity "by-day"
-;;                   :from "2015-01-10T12:10:10Z"
-;;                   :to "2015-01-10T12:10:10Z"
-;;                   :dimensions ["replies" "errors"]
-;;                   })
-
-
-;; ((comp get-stats normalize-parameters) fake-params )
-
-(defroutes app*
-  (GET "/api/:name" [name] (hello name))
+(defroutes routes
   (GET "/api/bots/buzz-data"
        [& params]
        {
@@ -121,7 +97,7 @@
 )
 
 (def app
-  (-> app*
+  (-> routes
       (middleware/wrap-json-body)
       (middleware/wrap-json-response)
       (compojure.handler/api)))
