@@ -1,9 +1,11 @@
 (ns clj-api.handlers
   (:use
    [compojure.core :only (GET PUT POST defroutes)]
-   [clj-api.stats :only (get-stats-data-series get-stats-range)])
+   [clj-api.stats :only (get-stats-data-series get-stats-range)]
+   [clj-api.mongo :only (get-bots-short)])
   (:require
-   (compojure handler route)
+   [clj-api.encoders] ;cheshire encoders
+   [compojure handler route]
    [ring.util.response :as response]
    [ring.middleware.json :as middleware]
    [clj-time.format :as tf]))
@@ -87,22 +89,11 @@
 
 
 (defroutes routes
-  (GET "/api/bots/buzz-data"
-       [& params]
-       {
-        :status 200
-        :body (get-stats (normalize-parameters params))
-        })
+  (GET "/api/bots/" [] (response/response (get-bots-short)))
+  (GET "/api/bots/buzz-data" [& params]
+       (response/response (get-stats (normalize-parameters params))))
   (GET "/api/bots/:bot/stats-range" [bot]
-       (let
-         [[first last] (get-stats-range bot)]
-         {:status 200
-          :body {
-            :first (.toString first)
-            :last (.toString last)
-            }
-          }))
-
+       (response/response (zipmap [:first :last] (get-stats-range bot))))
   (compojure.route/not-found "Sorry, there's nothing here.")
 )
 

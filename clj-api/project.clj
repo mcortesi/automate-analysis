@@ -8,6 +8,7 @@
                  [ring "1.4.0-RC2"]
                  [ring/ring-json "0.3.1"]
                  [compojure "1.3.4"]
+                 [com.novemberain/monger "3.0.0-rc2"]
                  [com.taoensso/carmine "2.11.1"]
                  [clj-time "0.8.0"]]
   :plugins [[lein-ring "0.9.6"]]

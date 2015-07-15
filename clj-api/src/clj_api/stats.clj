@@ -89,7 +89,7 @@
 
 
 (defn get-stats-range
-  "Retrives the first and last date for where the Bot has stats"
+  "Retrieves the first and last date for where the Bot has stats"
   [bot]
   (let
     [to-date (partial tf/parse to-field-formatter)
