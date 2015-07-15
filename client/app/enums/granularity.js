@@ -1,7 +1,7 @@
 var Granularity = {
-  BY_MINUTE: 'by_minute',
-  BY_HOUR: 'by_hour',
-  BY_DAY: 'by_day'
+  by_min: 'Minutes',
+  by_hour: 'Hours',
+  by_day: 'Days'
 }
 
 export default Object.freeze(Granularity)

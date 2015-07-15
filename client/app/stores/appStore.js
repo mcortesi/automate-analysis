@@ -1,12 +1,31 @@
 import _ from 'lodash'
 
+function updateState(oldState, stateChange) {
+  return _.extend({}, oldState, stateChange);
+}
+
 const actions = {
+
   setSearchParams(state, action) {
-    return _.extend({}, state, {params: action.searchParams});
+    return updateState(state, {
+      params: action.searchParams
+    });
   },
 
-  doRequest(state, action) {
-    return _.extend({}, state, { status: { fetching: true, empty: false, message: "Fetching stats for: " + action.botId }});
+  startRequest(state, action) {
+    return updateState(state, {
+      status: {
+        fetching: true,
+        message: `Fetching stats for: ${action.botId}`
+      }
+    });
+  },
+
+  endRequest(state, action) {
+    return updateState(state, {
+      result: action.result,
+      status: action.status
+    });
   }
 }
 
