@@ -1,5 +1,6 @@
 import React from 'react';
 import SearchForm from './SearchForm';
+import Chart from './Chart';
 
 import store from '../stores/appStore';
 import createDispatcher from '../actions/dispatcher';
@@ -52,6 +53,9 @@ export default class App extends React.Component {
              <hr/>
              <SearchForm onSearch={this.handleNewSearch.bind(this)}/>
              <div>{JSON.stringify(this.state)}</div>
+             <h1>Chart</h1>
+             <hr/>
+             <Chart data={this.state.result}/>
            </div>
   }
 
@@ -76,8 +80,6 @@ export default class App extends React.Component {
 
 }
 
-
-
 function initialState() {
   return {
     params: null,
@@ -85,6 +87,45 @@ function initialState() {
       empty: true,
       message: 'Ready to do some queries?'
     },
-    result: null
+    result: {
+      "description": {
+        "effective-from": "2015-02-10T16:00:00.000Z",
+        "from": "2015-02-10T16:44:00.000Z",
+        "to": "2015-02-11T11:14:00.000Z",
+        "effective-to": "2015-02-11T11:00:00.000Z",
+        "granularity": "hours",
+        "dimensions": [
+          "accepted"
+        ],
+        "bots": [
+          "54c7c8bb7365df0300d56bcd"
+        ]
+      },
+      "stats": {
+        "54c7c8bb7365df0300d56bcd": {
+          "accepted": [
+            1864,
+            431,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    }
   }
 }
