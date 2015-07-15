@@ -88,13 +88,28 @@
     ))
 
 
+(defn get-stats-range
+  "Retrives the first and last date for where the Bot has stats"
+  [bot]
+  (let
+    [to-date (partial tf/parse to-field-formatter)
+     all-keys (wcar* (car/hkeys (redis-key-for bot :processed)))
+     sorted-dates (sort (map to-date all-keys))
+     ]
+    [(first sorted-dates) (last sorted-dates)]
+  ))
+
+
 ;; Example:
 ;; (def bot "54c7c8bb7365df0300d56bcd")
-;; (def from (tf/parse date-formatter "201502101645"))
+;; (def from (tf/parse to-field-formatter "201502101645"))
 ;; (def to (t/plus from (t/hours 4)))
 
+;; (get-stats-range bot)
 ;; (get-stats-data-series bot
 ;;                        :kinds [:accepted :rejected]
 ;;                        :from from
 ;;                        :to to
 ;;                        :granularity :minutes)
+
+

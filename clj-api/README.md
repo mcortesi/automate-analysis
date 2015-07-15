@@ -46,6 +46,7 @@ Change `host` and `port` as you need. The default redis port is usually 6379.
 List of endpoints:
 
 * Get Bot Stats: `/api/bots/buzz-data`
+* Get Bot stats range: `/api/bots/:bot/stats-range`
 
 
 ### Get Bot Stats
@@ -80,6 +81,26 @@ Response:
   }
 }
 
+```
+
+## Get Bot stats range
+
+Returns the range for which we have stats recorded.
+
+Url: `/api/bots/:bot/stats-range`
+
+Url Parameters:
+ * `:bot`: bot id
+
+Example: http://localhost:3000/api/bots/54c7c8bb7365df0300d56bcd/stats-range
+
+Response:
+
+```json
+{
+  "first": "2015-02-10T16:44:00.000Z",
+  "last": "2015-02-11T11:14:00.000Z"
+}
 ```
 
 

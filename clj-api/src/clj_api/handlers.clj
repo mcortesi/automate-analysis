@@ -1,7 +1,7 @@
 (ns clj-api.handlers
   (:use
    [compojure.core :only (GET PUT POST defroutes)]
-   [clj-api.stats :only (get-stats-data-series)])
+   [clj-api.stats :only (get-stats-data-series get-stats-range)])
   (:require
    (compojure handler route)
    [ring.util.response :as response]
@@ -93,6 +93,16 @@
         :status 200
         :body (get-stats (normalize-parameters params))
         })
+  (GET "/api/bots/:bot/stats-range" [bot]
+       (let
+         [[first last] (get-stats-range bot)]
+         {:status 200
+          :body {
+            :first (.toString first)
+            :last (.toString last)
+            }
+          }))
+
   (compojure.route/not-found "Sorry, there's nothing here.")
 )
 
