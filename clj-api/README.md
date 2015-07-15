@@ -15,6 +15,32 @@ $ lein ring server-headless
 
 This will start the server with hot reload on http://localhost:3000/.
 
+
+## Configuration
+
+In order to use the APi you need to setup a Redis connenction.
+
+Go to `src/clj_api/stats.clj` and find:
+
+```clojure
+(def redis-conn-data
+  {
+   :pool {}
+   :spec {
+      :host "127.0.0.1"
+      :port 6380
+  }
+  }
+)
+```
+
+Change `host` and `port` as you need. The default redis port is usually 6379.
+
+
+
+
+
+
 ## API
 
 List of endpoints:
