@@ -18,6 +18,9 @@ This will start the server with hot reload on http://localhost:3000/.
 
 ## Configuration
 
+
+### Redis
+
 In order to use the APi you need to setup a Redis connenction.
 
 Go to `src/clj_api/stats.clj` and find:
@@ -37,8 +40,23 @@ Go to `src/clj_api/stats.clj` and find:
 Change `host` and `port` as you need. The default redis port is usually 6379.
 
 
+### Mongo DB
+
+You need to configure the connection in `src/clj_api/mongo.clj`.
+
+Look for:
 
 
+```clojure
+(def configuration
+  {
+   :connection {:host "localhost" :port 27017 }
+   :database "automate-prod"
+  }
+)
+```
+
+Change at will!
 
 
 ## API
