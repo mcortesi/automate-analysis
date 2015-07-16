@@ -2,6 +2,7 @@ import React from 'react';
 
 import Granularity from '../enums/granularity';
 import Dimensions from '../enums/dimensions';
+import DateService from '../services/dateService';
 
 
 class FormInput extends React.Component {
@@ -55,18 +56,16 @@ class FormSelect extends React.Component {
 
 }
 
-
-
 export default class SearchForm extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      botId: '54c7c8bb7365df0300d56bcd',
-      dimensions: 'accepted',
-      granularity: 'by-min',
-      dateFrom: '2015-01-30T12:10:10Z',
-      dateTo: '2015-01-31T12:10:10Z'
+      botId: this.props.botId,
+      dimensions: this.props.dimensions,
+      granularity: this.props.granularity,
+      dateFrom: this.props.dateFrom,
+      dateTo: this.props.dateTo
     }
   }
 
@@ -82,13 +81,16 @@ export default class SearchForm extends React.Component {
     this.props.onSearch(formData);
   }
 
-  stripTimeZone(date) {
-    const len = date.length;
-    if(date.charAt(date.length - 1) == 'Z') {
-      return date.substr(0, len - 1);
-    } else {
-      return date;
-    }
+  handlePrefetch(e) {
+    const formData = this.state;
+    this.props.onPrefetchRanges(formData)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      dateFrom: nextProps.dateFrom,
+      dateTo: nextProps.dateTo
+    });
   }
 
   render() {
@@ -103,13 +105,14 @@ export default class SearchForm extends React.Component {
               <FormSelect id="dimensions" options={Dimensions} label="Dimensions:"
                 value={this.state.dimensions} onChange={this.propertyChanged.bind(this)}/>
 
-              <FormInput id="dateFrom" type="datetime-local" label="From:"
-                value={this.stripTimeZone(this.state.dateFrom)} onChange={this.propertyChanged.bind(this)}/>
+              <FormInput id="dateFrom" type="text" label="From:"
+                value={DateService.toDisplayFormat(this.state.dateFrom)} onChange={this.propertyChanged.bind(this)}/>
 
-              <FormInput id="dateTo" type="datetime-local" label="To:"
-                value={this.stripTimeZone(this.state.dateTo)} onChange={this.propertyChanged.bind(this)}/>
+              <FormInput id="dateTo" type="text" label="To:"
+                value={DateService.toDisplayFormat(this.state.dateTo)} onChange={this.propertyChanged.bind(this)}/>
 
               <button type="submit" class="btn btn-default">Submit</button>
+              <button type="button" class="btn btn-default" onClick={this.handlePrefetch.bind(this)}>Fetch ranges</button>
             </form>
   }
 }

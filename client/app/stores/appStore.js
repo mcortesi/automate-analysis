@@ -4,24 +4,27 @@ import dispatcher from '../actions/dispatcher';
 import request from 'superagent';
 import Bluebird from 'bluebird'
 
-import DateService from '../services/dateService'
+import {RANGE_ENPOINT, STATS_ENPOINT} from '../services/endpoints'
 
 Bluebird.promisifyAll(request)
 
-function STATS_ENPOINT(params) {
-  let { botId, dimensions, granularity, dateFrom, dateTo } = params;
 
-  dateFrom = DateService.toServerFormat(dateFrom);
-  dateTo = DateService.toServerFormat(dateTo);
-
-  return `http://localhost:3000/api/bots/buzz-data?bots=${botId}&dimensions=${dimensions}&granularity=${granularity}&from=${dateFrom}&to=${dateTo}`
-}
 
 function updateState(oldState, stateChange) {
-  return _.extend({}, oldState, stateChange);
+  return _.assign({}, oldState, stateChange);
+}
+
+function doRequest(uri) {
+  return request
+    .get(uri)
+    .endAsync();
 }
 
 const actions = {
+
+  findRanges(action) {
+    dispatcher.dispatch(store, { type: 'botRangeRequest', state: action.state, botId: action.botId });
+  },
 
   setSearchParams(action) {
     const newState = updateState(action.state, {
@@ -35,13 +38,13 @@ const actions = {
       //LO REPLICAMOS EN TODA STORE???? (PERO QUEREMOS QUE LAS STORES SEAN FUNCIONES PURAS)
 
     setTimeout(() => {
-      dispatcher.dispatch(store, { type: 'startRequest', state: newState, searchParams: action.searchParams });
+      dispatcher.dispatch(store, { type: 'statsRequest', state: newState, searchParams: action.searchParams });
     }, 0);
 
     return newState;
   },
 
-  startRequest(action) {
+  statsRequest(action) {
     const newState = updateState(action.state, {
       status: {
         fetching: true,
@@ -51,26 +54,65 @@ const actions = {
 
     const uri = STATS_ENPOINT(action.searchParams);
 
-    request
-     .get(uri)
-     .endAsync()
+    doRequest(uri)
      .then((result) => {
-       dispatcher.dispatch(store, { type: 'endRequest', state: newState, result: result.body, status: { success: true, message: 'Fetched OK.' } });
+       dispatcher.dispatch(store, { type: 'endStatsRequest', state: newState, result: result.body, status: { success: true, message: 'Fetched OK.' } });
      })
      .catch((error) => {
        const message = `Request to ${uri} failed with: ${error.message}`
-       dispatcher.dispatch(store, { type: 'endRequest', state: newState, botId: action.searchParams.botId, status: { error: true, message: message } });
+       dispatcher.dispatch(store, { type: 'endStatsRequest', state: newState, botId: action.searchParams.botId, status: { error: true, message: message } });
      })
 
      return newState;
   },
 
-  endRequest(action) {
+  botRangeRequest(action) {
+    const newState = updateState(action.state, {
+      status: {
+        fetching: true,
+        message: `Fetching stats for: ${action.botId}`
+      }
+    });
+
+    let searchParams = Object.create(action.state.searchParams);
+    const uri = RANGE_ENPOINT(action.botId);
+
+    doRequest(uri)
+     .then((result) => {
+
+       if(!result.body.first || !result.body.last) {
+         throw new Error('Invalid ranges')
+       }
+
+       searchParams.dateFrom = result.body.first
+       searchParams.dateTo = result.body.last
+
+       dispatcher.dispatch(store, { type: 'endBotRangeRequest', state: newState, searchParams: searchParams, status: { success: true, message: 'Fetched OK.' } });
+     })
+     .catch((error) => {
+       const message = `Request to ${uri} failed with: ${error.message}`
+       dispatcher.dispatch(store, { type: 'endBotRangeRequest', state: newState, searchParams: searchParams, status: { error: true, message: message } });
+     })
+
+     return newState;
+  },
+
+  endStatsRequest(action) {
     return updateState(action.state, {
       result: action.result,
       status: action.status
     });
+  },
+
+  endBotRangeRequest(action) {
+    let newState = {}
+
+    return updateState(action.state, {
+      searchParams: action.searchParams,
+      status: action.status
+    });
   }
+
 }
 
 export default function store(action) {
