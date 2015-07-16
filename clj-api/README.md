@@ -47,6 +47,8 @@ List of endpoints:
 
 * Get Bot Stats: `/api/bots/buzz-data`
 * Get Bot stats range: `/api/bots/:bot/stats-range`
+* Get Bots: `/api/bots`
+* Get Bot transitions: `/api/bots/:bot/transitions`
 
 
 ### Get Bot Stats
@@ -101,6 +103,49 @@ Response:
   "first": "2015-02-10T16:44:00.000Z",
   "last": "2015-02-11T11:14:00.000Z"
 }
+```
+
+## Get Bots
+
+
+Url: `/api/bots`
+
+Response:
+
+```json
+[
+  {
+    "_id": "5466504d305858020006c7bd",
+    "name": "Isobar TIM - Autoreply Internet [DESKTOP] text + image"
+  },
+  {
+    "_id": "54665109305858020006c7bf",
+    "name": "Isobar TIM - Autoreply Internet [MOBILE] text + image"
+  },
+  {
+    "_id": "5466516a305858020006c7c1",
+    "name": "Isobar TIM - Autoreply Sinal [DESKTOP] text + image"
+  },
+  ...
+]
+```
+
+## Get Bot Transitions
+
+Url: `/api/bots/:bot/transitions`
+
+Url Parameters:
+ * `:bot`: bot id
+
+Response:
+
+```json
+[
+  {
+  "to": "stopped",
+  "date": "2015-03-03T13:39:10Z"
+  }
+]
 ```
 
 

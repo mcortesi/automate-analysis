@@ -1,9 +1,9 @@
 (ns clj-api.handlers
   (:use
-   [compojure.core :only (GET PUT POST defroutes)]
-   [clj-api.stats :only (get-stats-data-series get-stats-range)]
-   [clj-api.mongo :only (get-bots-short)])
+   [compojure.core :only (GET PUT POST defroutes)])
   (:require
+   [clj-api.mongo :as mongo]
+   [clj-api.stats :as stats]
    [clj-api.encoders] ;cheshire encoders
    [compojure handler route]
    [ring.util.response :as response]
@@ -50,7 +50,7 @@
        (into {}
              (for [bot bots]
                   [bot
-                    (get-stats-data-series
+                    (stats/get-stats-data-series
                        bot
                        :kinds dimensions
                        :granularity granularity
@@ -90,11 +90,13 @@
 
 
 (defroutes routes
-  (GET "/api/bots/" [] (response/response (get-bots-short)))
+  (GET "/api/bots" [] (response/response (mongo/get-bots-short)))
   (GET "/api/bots/buzz-data" [& params]
        (response/response (get-stats (normalize-parameters params))))
   (GET "/api/bots/:bot/stats-range" [bot]
-       (response/response (zipmap [:first :last] (get-stats-range bot))))
+       (response/response (zipmap [:first :last] (stats/get-stats-range bot))))
+  (GET "/api/bots/:bot/transitions" [bot]
+       (response/response (mongo/get-bot-transitions bot)))
   (compojure.route/not-found "Sorry, there's nothing here.")
 )
 

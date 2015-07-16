@@ -3,7 +3,8 @@
             [monger.json]
             [monger.core :as mg]
             [monger.collection :as mc])
-  (:import [com.mongodb MongoOptions ServerAddress]))
+  (:import [com.mongodb MongoOptions ServerAddress]
+           [org.bson.types ObjectId]))
 
 ;; given host, given port
 (def configuration
@@ -25,6 +26,10 @@
 ;;   (mg/disconnect conn))
 
 
+(defn get-bot [^String botId & [fields]]
+  (if (empty? fields)
+    (mc/find-map-by-id db bot-col (ObjectId. botId))
+    (mc/find-map-by-id db bot-col (ObjectId. botId) fields)))
 
 (defn get-bots [& [fields]]
   (if (empty? fields)
@@ -34,7 +39,12 @@
 (defn get-bots-short [] (get-bots [:_id :name]))
 
 
-(defn get-bot-transitions [] (get-bots [:transitions]))
+(defn get-bot-transitions [botId]
+  (let
+    [bot (get-bot botId [:transitions])]
+    (map #(select-keys % [:date :to]) (:transitions bot))))
+
+(get-bot-transitions "5466504d305858020006c7bd")
 
 (defn extract-processing-intervals [bots]
   "Given a seq of bots with their transitions, it returns a sorted list of intervals [from to]
