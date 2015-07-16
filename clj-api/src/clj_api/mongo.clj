@@ -24,10 +24,53 @@
 ;; (let [conn (mg/connect)]
 ;;   (mg/disconnect conn))
 
-(defn get-bots-short
-  []
-  (mc/find-maps db bot-col nil [:_id :name])
-)
+
+
+(defn get-bots [& [fields]]
+  (if (empty? fields)
+    (mc/find-maps db bot-col)
+    (mc/find-maps db bot-col nil fields)))
+
+(defn get-bots-short [] (get-bots [:_id :name]))
+
+
+(defn get-bot-transitions [] (get-bots [:transitions]))
+
+(defn extract-processing-intervals [bots]
+  "Given a seq of bots with their transitions, it returns a sorted list of intervals [from to]
+   showing when there was a bot in processing state"
+  (let
+    [augment-transitions
+       (fn [transitions]
+         (map #(assoc % :end-date (:date %2)) transitions (rest transitions)))
+     transitions (flatten (map (comp augment-transitions :transitions) bots))
+     is-processing #(#{"processing" "processing_with_f2u"} (:to %))
+     sorted-processing (sort-by :date (filter is-processing transitions))
+     ]
+    (map #(vector (:date %) (:end-date %)) sorted-processing)))
+
+(defn extract-active-bots-intervals
+  "Given a seq of bots with ther transitions, it returns a sorted list of [start-date active-bots]
+   showing how many active bots where a that starting date."
+  [bots]
+  (let
+    [processing-intervals (extract-processing-intervals bots)
+     starts (map #(vector % 1) (map first processing-intervals)) ; list of [start-date 1]
+     ends (map #(vector % -1) (sort (map second processing-intervals))) ; list of [end-date -1]
+     all-changes (sort-by first (concat starts ends))
+    ]
+    (loop [active 0 changes all-changes result []]
+      (if (seq changes)
+        (let [[from diff] (first changes)
+              new-active (+ active diff)]
+          (recur new-active (rest changes) (conj result [from new-active])))
+        result))
+  ))
+
+
+(defn get-active-bots-intervals [] (extract-active-bots-intervals (get-bot-transitions)))
+
+;; (apply max (map second (extract-active-bots-intervals (get-bot-transitions))))
 
 
 ;; (keys  (mc/find-one-as-map db bot-col nil))
