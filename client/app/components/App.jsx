@@ -5,26 +5,6 @@ import Chart from './Chart';
 import appStore from '../stores/appStore';
 import dispatcher from '../actions/dispatcher';
 
-import request from 'superagent';
-import Bluebird from 'bluebird'
-
-import DateService from '../services/dateService'
-
-Bluebird.promisifyAll(request)
-
-/*
-  Example `http://localhost:3000/api/bots/buzz-data?bots=54c7c8bb7365df0300d56bcd&dimensions=accepted&granularity=by-min&from=2015-01-30T12:10:10Z&to=2015-01-31T12:10:10Z`
-*/
-
-function STATS_ENPOINT(params) {
-  let { botId, dimensions, granularity, dateFrom, dateTo } = params;
-
-  dateFrom = DateService.toServerFormat(dateFrom);
-  dateTo = DateService.toServerFormat(dateTo);
-
-  return `http://localhost:3000/api/bots/buzz-data?bots=${botId}&dimensions=${dimensions}&granularity=${granularity}&from=${dateFrom}&to=${dateTo}`
-}
-
 export default class App extends React.Component {
 
   constructor(props) {
@@ -54,20 +34,6 @@ export default class App extends React.Component {
 
   handleNewSearch(searchParams) {
     dispatcher.dispatch(appStore, { type: 'setSearchParams', state: this.state, searchParams: searchParams });
-    dispatcher.dispatch(appStore, { type: 'startRequest', state: this.state, botId: searchParams.botId });
-
-    const uri = STATS_ENPOINT(searchParams);
-
-    request
-     .get(uri)
-     .endAsync()
-     .then((result) => {
-       dispatcher.dispatch(appStore, { type: 'endRequest', state: this.state, result: result.body, status: { success: true, message: 'Fetched OK.' } });
-     })
-     .catch((error) => {
-       const message = `Request to ${uri} failed with: ${error.message}`
-       dispatcher.dispatch(appStore, { type: 'endRequest', state: this.state, botId: searchParams.botId, status: { error: true, message: message } });
-     })
   }
 
 }
