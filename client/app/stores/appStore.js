@@ -128,7 +128,8 @@ const actions = {
 
   endBotsRequest(action) {
     return updateState(action.state, {
-      bots: action.bots
+      bots: action.bots,
+      status: action.status
     });
   },
 
