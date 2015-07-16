@@ -30,7 +30,12 @@ class FormSelect extends React.Component {
             <select id={this.props.id} multiple onChange={this.onChange.bind(this)}>
               {
                 Object.keys(this.props.options).map((k) => {
-                  return <option value={k}>{this.props.options[k]}</option>
+                  if(_.contains(this.props.value, k)) {
+                    return <option selected value={k}>{this.props.options[k]}</option>
+                  } else {
+                    return <option value={k}>{this.props.options[k]}</option>
+                  }
+
                 })
               }
             </select>
@@ -57,7 +62,13 @@ export default class SearchForm extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {}
+    this.state = {
+      botId: '54c7c8bb7365df0300d56bcd',
+      dimensions: 'accepted',
+      granularity: 'by-min',
+      dateFrom: '2015-01-30T12:10:10',
+      dateTo: '2015-01-31T12:10:10'
+    }
   }
 
   propertyChanged(id, value) {

@@ -24,12 +24,7 @@ function STATS_ENPOINT(params) {
   dateFrom = DateService.toServerFormat(dateFrom);
   dateTo = DateService.toServerFormat(dateTo);
 
-  return `http://localhost:3000/api/bots/buzz-data?
-          bots=${botId}&
-          dimensions=${dimensions}&
-          granularity=${granularity}&
-          from=${dateFrom}
-          to=${dateTo}`
+  return `http://localhost:3000/api/bots/buzz-data?bots=${botId}&dimensions=${dimensions}&granularity=${granularity}&from=${dateFrom}&to=${dateTo}`
 }
 
 export default class App extends React.Component {
@@ -55,7 +50,7 @@ export default class App extends React.Component {
              <div>{JSON.stringify(this.state)}</div>
              <h1>Chart</h1>
              <hr/>
-             <Chart data={this.state.result}/>
+             {this.state.result ? <Chart data={this.state.result}/> : <span>No data</span>}
            </div>
   }
 
@@ -67,10 +62,9 @@ export default class App extends React.Component {
 
     request
      .get(uri)
-     .withCredentials()
      .endAsync()
      .then((result) => {
-       dispatch({ type: 'endRequest', result: result, status: { success: true, message: 'Fetched OK.' } });
+       dispatch({ type: 'endRequest', result: result.body, status: { success: true, message: 'Fetched OK.' } });
      })
      .catch((error) => {
        const message = `Request to ${uri} failed with: ${error.message}`
@@ -87,45 +81,6 @@ function initialState() {
       empty: true,
       message: 'Ready to do some queries?'
     },
-    result: {
-      "description": {
-        "effective-from": "2015-02-10T16:00:00.000Z",
-        "from": "2015-02-10T16:44:00.000Z",
-        "to": "2015-02-11T11:14:00.000Z",
-        "effective-to": "2015-02-11T11:00:00.000Z",
-        "granularity": "hours",
-        "dimensions": [
-          "accepted"
-        ],
-        "bots": [
-          "54c7c8bb7365df0300d56bcd"
-        ]
-      },
-      "stats": {
-        "54c7c8bb7365df0300d56bcd": {
-          "accepted": [
-            1864,
-            431,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ]
-        }
-      }
-    }
+    result: null
   }
 }
