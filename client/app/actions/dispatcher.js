@@ -1,27 +1,25 @@
-export default function createDispatcher(store, initialState) {
-  let state = initialState;
-  const listeners = [];
+const listeners = [];
 
-  function dispatch(action) {
-    state = store(state, action);
-    emitChange();
+function dispatch(store, action) {
+  const state = store(action);
+  emitChange(state);
+}
+
+function subscribe(listener) {
+  listeners.push(listener);
+
+  return () => {
+    const index = listeners.indexOf(listener);
+    listeners.splice(index, 1);
   }
+}
 
-  function subscribe(listener) {
-    listeners.push(listener);
-    listener(state);
-    return () => {
-      const index = listeners.indexOf(listener);
-      listeners.splice(index, 1);
-    }
-  }
+function emitChange(state) {
+  listeners.forEach(listener => listener(state));
+}
 
-  function emitChange() {
-    listeners.forEach(listener => listener(state));
-  }
 
-  return {
-    dispatch,
-    subscribe
-  };
+export default {
+  subscribe: subscribe,
+  dispatch: dispatch
 }

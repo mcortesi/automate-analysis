@@ -6,14 +6,15 @@ function updateState(oldState, stateChange) {
 
 const actions = {
 
-  setSearchParams(state, action) {
-    return updateState(state, {
+  setSearchParams(action) {
+    return updateState(action.state, {
       params: action.searchParams
     });
+    
   },
 
-  startRequest(state, action) {
-    return updateState(state, {
+  startRequest(action) {
+    return updateState(action.state, {
       status: {
         fetching: true,
         message: `Fetching stats for: ${action.botId}`
@@ -21,19 +22,19 @@ const actions = {
     });
   },
 
-  endRequest(state, action) {
-    return updateState(state, {
+  endRequest(action) {
+    return updateState(action.state, {
       result: action.result,
       status: action.status
     });
   }
 }
 
-export default function store(state, action) {
+export default function store(action) {
   let selectedAction = actions[action.type]
 
   if(selectedAction)
-    return selectedAction(state, action)
+    return selectedAction(action)
   else
     return state
 }
