@@ -6,3 +6,30 @@ body {
   height: 100px;
   overflow: scroll;
 }
+
+.linechart {
+
+  .tooltip {
+    opacity: inherit !important;
+  }
+
+  .bs-tooltip {
+    white-space: nowrap;
+
+    .tooltip-inner {
+      max-width  : inherit;
+      text-align : left;
+    }
+  }
+
+  .brush .background {
+    fill: #ddd;
+  }
+
+  .brush .extent {
+    stroke: #000;
+    fill-opacity: .125;
+    shape-rendering: crispEdges;
+  }
+
+}

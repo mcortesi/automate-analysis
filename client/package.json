@@ -39,7 +39,7 @@
     "jquery": "^2.1.4",
     "lodash": "^3.10.0",
     "moment": "^2.10.3",
-    "react-d3": "^0.3.1",
+    "react-d3-components": "^0.4.8",
     "superagent": "^1.2.0"
   }
 }

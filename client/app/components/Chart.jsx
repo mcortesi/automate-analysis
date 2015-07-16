@@ -2,13 +2,30 @@ import _      from 'lodash';
 import moment from 'moment';
 import React  from 'react';
 import d3     from 'd3';
-import rd3    from 'react-d3';
+import rd3c   from 'react-d3-components';
 
 export default class Chart extends React.Component {
 
-  prepareData(raw) {
-    console.log('RAW', raw);
+  constructor(props){
+    super(props)
+    this.state = this.getStateFromProps(props);
+  }
 
+  componentWillReceiveProps(nextProps){
+    this.setState(this.getStateFromProps(nextProps));
+  }
+
+  getStateFromProps(props){
+    let from = new Date(props.data.description['effective-from']);
+    let to   = new Date(props.data.description['effective-to']);
+
+    return {
+      xScale      : d3.time.scale().domain([ from, to ]).range([0, 1000]),
+      xScaleBrush : d3.time.scale().domain([ from, to ]).range([0, 1000])
+    };
+  }
+
+  prepareData(raw) {
     // Prepare scale
     let from       = moment(raw.description['effective-from']);
     let to         = moment(raw.description['effective-to']);
@@ -20,191 +37,101 @@ export default class Chart extends React.Component {
       from.add(1, g)
     }
 
-    console.log('ts', timestamps);
-
     // Prepare data for graph
-    let data = []
+    let data = {}
+
     _.forEach(raw.description.bots, function(key, index){
-      console.log(key, index);
-      data.push({
-        name: 'Bot ' + key,
-        values: _(timestamps)
-        .map(function(ts, index){
-          return {
-            x: ts,
-            y: raw.stats[key].accepted[index]
-          }
+      data[key] = [];
+    });
+
+    _.forEach(raw.description.bots, function(key, index){
+      _.forEach(raw.description.dimensions, function(dimension, index){
+        data[key].push({
+          label: dimension,
+          values: _(timestamps)
+          .map(function(ts, index){
+            return {
+              x: ts,
+              y: raw.stats[key][dimension][index]
+            }
+          })
+          .filter(function(obj){
+            return obj.y !== undefined;
+          })
+          .value()
         })
-        .filter(function(obj){
-          return obj.y !== undefined;
-        })
-        .value()
-      })
+      });
     });
 
     return data;
 
   }
 
-  render() {
-
-    let data = this.prepareData(this.props.data)
-
-    console.log('DATA', data);
-
-    return  <rd3.LineChart legend={true} data={data} width={1200} height={300} title="Line Chart" />
+  prepareRawData(){
+    // this.props.data = {'description':{'effective-from':'2015-02-10T16:00:00.000Z','from':'2015-02-10T16:44:00.000Z','to':'2015-02-11T11:14:00.000Z','effective-to':'2015-02-11T11:00:00.000Z','granularity':'hours','dimensions':['accepted'],'bots':['54c7c8bb7365df0300d56bcd']},'stats':{'54c7c8bb7365df0300d56bcd':{'accepted':[1864,431,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}}}
+    return this.prepareData(this.props.data);
   }
-}
 
-// let d3Chart = {
-//   _scales : function(el, domain) {
-//     if (!domain) {
-//       return null;
-//     }
+  render() {
+    let data = this.prepareRawData()
 
-//     let width = el.offsetWidth;
-//     let height = el.offsetHeight;
+    let from = new Date(this.props.data.description['effective-from']);
+    let to   = new Date(this.props.data.description['effective-to']);
 
-//     let x = d3.scale.linear()
-//       .range([0, width])
-//       .domain(domain.x);
+    // Assuming no more than one bot is always queried
+    data = data[_.first(_.values(this.props.data.description.bots))]
 
-//     let y = d3.scale.linear()
-//       .range([height, 0])
-//       .domain(domain.y);
+    let tooltipProcessor = function(y, yAccum, xIndex){
+      let x = moment(data[0].values[xIndex].x).format('dddd, MMMM Do YYYY, h:mm:ss a');
 
-//     let z = d3.scale.linear()
-//       .range([5, 20])
-//       .domain([1, 10]);
+      let dataByDimensions = _.indexBy(data, 'label');
 
-//     return {x: x, y: y, z: z};
-//   },
+      let dimensionContent = [];
+      _.forEach(this.props.data.description.dimensions, function(dimension){
+        if (!_.isEmpty(dataByDimensions[dimension]) && !_.isEmpty(dataByDimensions[dimension].values[xIndex])){
+          dimensionContent.push(<br />);
+          dimensionContent.push(<div>{dimension + ': ' + dataByDimensions[dimension].values[xIndex].y}</div>);
+        }
+      })
 
-//   create : function(el, props, state) {
-//     let svg = d3.select(el).append('svg')
-//         .attr('class', 'd3')
-//         .attr('width', props.width)
-//         .attr('height', props.height);
-
-//     svg.append('g').attr('class', 'd3-lines');
-
-//     this.update(el, state);
-//   },
-
-//   update : function(el, state) {
-//     // Re-compute the scales, and render the data points
-//     let scales = this._scales(el, state.domain);
-//     this._drawPoints(el, scales, state.data);
-//   },
-
-//   destroy: function(el) {
-//     // Any clean-up would go here
-//     // in this example there is nothing to do
-//   },
-
-//   _drawPoints: function(el, scales, data) {
-//     console.log('DATA', data);
-//     let g = d3.select(el).selectAll('.d3-lines');
-
-//     let line = d3.svg.line()
-//     .x(function(d){ return d.x; })
-//     .y(function(d){ return d.y; })
-//     .interpolate("linear");
-
-//     let d3Line = g.selectAll('.d3-line')
-//     .data(data, function(d) { console.log(1, d);return d; });
-
-//     // ENTER
-//     d3Line.enter()
-//     .append('path')
-//     .attr("stroke", "red")
-//     .attr('class', 'd3-line');
-
-//     // ENTER & UPDATE
-//     d3Line
-//       .transition()
-//       .ease("linear")
-//       .duration(1000)
-//       .attr("d", function (d) { return line(d.values); });
-
-//     // EXIT
-//     d3Line.exit().remove();
-//   }
-// };
-
-// export default class Chart extends React.Component {
-
-//   getChartState() {
-//     return {
-//       data: this.props.data,
-//       domain: this.props.domain
-//     };
-//   }
-
-//   componentDidMount() {
-//     let el = React.findDOMNode(this);
-//     d3Chart.create(el, {
-//       width: '100%',
-//       height: '300px'
-//     }, this.getChartState());
-//   }
-
-//   componentDidUpdate() {
-//     let el = React.findDOMNode(this);
-//     d3Chart.update(el, this.getChartState());
-//   }
-
-//   componentWillUnmount() {
-//     let el = React.findDOMNode(this);
-//     d3Chart.destroy(el);
-//   }
-
-//   render() {
-//     return  <div className="Chart"></div>
-//   }
-// }
-
-
-
-
-
-
-/**
-class Line extends React.Component {
-  getDefaultProps() {
-    return {
-      path: '',
-      color: 'blue',
-      width: 2
+      return  <div className="bs-tooltip tooltip right">
+                <div className="tooltip-arrow"></div>
+                <div className="tooltip-inner">
+                  {x}
+                  {dimensionContent}
+                </div>
+              </div>
     }
+
+    // tickFormat: d3.time.format('%m/%d/%y - %H:%M')
+    return  <div className='linechart'>
+              <rd3c.AreaChart
+                data        = {data}
+                width       = {1200}
+                height      = {300}
+                margin      = { {top: 10, bottom: 50, left: 50, right: 20} }
+                yAxis       = {{ label: 'Total' }}
+                xAxis       = {{ label: 'Time', tickValues: this.state.xScale.ticks(d3.time.hour, 5), tickFormat: d3.time.format('%H:%M') }}
+                xScale      = {this.state.xScale}
+                tooltipHtml = {tooltipProcessor.bind(this)}
+                title       = 'Line Chart' />
+              <div className="brush" style={{float: 'none'}}>
+                <rd3c.Brush
+                  width    = {1200}
+                  height   = {50}
+                  margin   = {{top: 0, bottom: 30, left: 50, right: 20}}
+                  xScale   = {this.state.xScaleBrush}
+                  extent   = {[ from, to ]}
+                  onChange = {this.onScaleChange.bind(this)}
+                  xAxis    = {{tickValues: this.state.xScaleBrush.ticks(d3.time.day, 2), tickFormat: d3.time.format("%m/%d")}} />
+              </div>
+            </div>
   }
 
-  render() {
-    return <path d={this.props.path} stroke={this.props.color} strokeWidth={this.props.width} fill="none" />
+  onScaleChange(extent){
+    this.setState({
+      xScale: d3.time.scale().domain([ new Date(extent[0]), new Date(extent[1]) ]).range([0, 1000])
+    });
   }
+
 }
-
-class DataSeries extends React.Component {
-  getDefaultProps() {
-    return {
-      title: '',
-      data: [],
-      interpolate: 'linear'
-    }
-  }
-
-  render() {
-    let self = this;
-    let props = this.props;
-    let yScale = props.yScale,
-    let xScale = props.xScale;
-
-    let path = d3.svg.line()
-    .x(function(d) { return xScale(d.x); })
-    .y(function(d) { return yScale(d.y); })
-    .interpolate(this.props.interpolate);
-
-    return <Line path={path(this.props.data)} color={this.props.color} />
-  }
-}
-*/
