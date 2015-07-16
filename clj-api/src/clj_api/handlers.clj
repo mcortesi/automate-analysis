@@ -65,6 +65,7 @@
         :to (.toString to)
         :effective-to (.toString (truncate-to to granularity))
         :granularity granularity
+
         :dimensions dimensions
         :bots bots
       }
@@ -97,8 +98,15 @@
   (compojure.route/not-found "Sorry, there's nothing here.")
 )
 
+
+(defn wrap-cors-header
+  [handler]
+  (fn [request]
+    (response/header (handler request) "Access-Control-Allow-Origin" "*")))
+
 (def app
   (-> routes
       (middleware/wrap-json-body)
       (middleware/wrap-json-response)
+      (wrap-cors-header)
       (compojure.handler/api)))
