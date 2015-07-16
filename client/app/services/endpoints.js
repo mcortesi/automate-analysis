@@ -13,7 +13,12 @@ function RANGE_ENPOINT(botId) {
   return `http://localhost:3000/api/bots/${botId}/stats-range`
 }
 
+function BOTS_ENPOINT() {
+  return 'http://localhost:3000/api/bots'
+}
+
 export default {
   STATS_ENPOINT: STATS_ENPOINT,
-  RANGE_ENPOINT: RANGE_ENPOINT
+  RANGE_ENPOINT: RANGE_ENPOINT,
+  BOTS_ENPOINT: BOTS_ENPOINT
 }

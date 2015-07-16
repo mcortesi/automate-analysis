@@ -4,7 +4,7 @@ import dispatcher from '../actions/dispatcher';
 import request from 'superagent';
 import Bluebird from 'bluebird'
 
-import {RANGE_ENPOINT, STATS_ENPOINT} from '../services/endpoints'
+import {RANGE_ENPOINT, STATS_ENPOINT, BOTS_ENPOINT} from '../services/endpoints'
 
 Bluebird.promisifyAll(request)
 
@@ -66,6 +66,28 @@ const actions = {
      return newState;
   },
 
+  loadBots(action) {
+    const newState = updateState(action.state, {
+      status: {
+        fetching: true,
+        message: `Fetching bots...`
+      }
+    });
+
+    const uri = BOTS_ENPOINT();
+
+    doRequest(uri)
+     .then((result) => {
+       dispatcher.dispatch(store, { type: 'endBotsRequest', state: newState, bots: result.body, status: { success: true, message: 'Fetched OK.' } });
+     })
+     .catch((error) => {
+       const message = `Request to ${uri} failed with: ${error.message}`
+       dispatcher.dispatch(store, { type: 'endBotsRequest', state: newState, bots: [], status: { error: true, message: message } });
+     })
+
+     return newState;
+  },
+
   botRangeRequest(action) {
     const newState = updateState(action.state, {
       status: {
@@ -101,6 +123,12 @@ const actions = {
     return updateState(action.state, {
       result: action.result,
       status: action.status
+    });
+  },
+
+  endBotsRequest(action) {
+    return updateState(action.state, {
+      bots: action.bots
     });
   },
 

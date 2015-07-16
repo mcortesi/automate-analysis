@@ -21,6 +21,10 @@ export default class App extends React.Component {
     this.unsubscribe();
   }
 
+  componentDidMount() {
+    this.loadBots();
+  }
+
   stripTimeZone(date) {
     const len = date.length;
     if(date.charAt(date.length - 1) == 'Z') {
@@ -56,6 +60,10 @@ export default class App extends React.Component {
         botId: botId
       }
     });
+  }
+
+  loadBots(searchParams) {
+    dispatcher.dispatch(appStore, { type: 'loadBots', state: this.state });
   }
 
   handleNewSearch(searchParams) {

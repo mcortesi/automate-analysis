@@ -6,51 +6,34 @@ export default class BotList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      bots: [{
-        name: 'Bot1',
-        id: '54c7c8bb7365df0300d56bcd'
-      },{
-        name: 'Bot1',
-        id: '54c7c8bb7365df0300d56bcd'
-      },{
-        name: 'Bot1',
-        id: '54c7c8bb7365df0300d56bcd'
-      },{
-        name: 'Bot1',
-        id: '54c7c8bb7365df0300d56bcd'
-      },{
-        name: 'Bot1',
-        id: '54c7c8bb7365df0300d56bcd'
-      },{
-        name: 'Bot1',
-        id: '54c7c8bb7365df0300d56bcd'
-      },{
-        name: 'Bot1',
-        id: '54c7c8bb7365df0300d56bcd'
-      },{
-        name: 'Bot1',
-        id: '54c7c8bb7365df0300d56bcd'
-      },{
-        name: 'Bot1',
-        id: '54c7c8bb7365df0300d56bcd'
-      },{
-        name: 'Bot1',
-        id: '54c7c8bb7365df0300d56bcd'
-      }]
+      bots: this.props.bots
     };
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      bots: nextProps.bots
+    });
+  }
+
   handleBotSelection(e) {
-    debugger
     this.props.onBotSelected(e.currentTarget.dataset.bot);
   }
 
   render() {
+    let list = null;
+
+    if(this.state.bots) {
+      list = this.state.bots.map ((b) => {
+        return <li data-bot={b._id} onClick={this.handleBotSelection.bind(this)}>{b.name}, {b._id}</li>
+      })
+    } else {
+      list = <li>No data</li>
+    }
+
     return <div className="bot-list">
              <ul>
-               {this.state.bots.map ((b) => {
-                 return <li data-bot={b.id} onClick={this.handleBotSelection.bind(this)}>{b.name}, {b.id}</li>
-               })}
+               {list}
              </ul>
            </div>
   }
