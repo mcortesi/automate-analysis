@@ -67,6 +67,7 @@ List of endpoints:
 * Get Bot stats range: `/api/bots/:bot/stats-range`
 * Get Bots: `/api/bots`
 * Get Bot transitions: `/api/bots/:bot/transitions`
+* Get System Active Bots: `/api/system/active-bots`
 
 
 ### Get Bot Stats
@@ -163,6 +164,33 @@ Response:
   "to": "stopped",
   "date": "2015-03-03T13:39:10Z"
   }
+]
+```
+## Get System active bots
+
+Get the data series of amount of active bots.
+
+It returns a list of pairs with `date` and `amount of active bots`.
+
+Url: `/api/system/active-bots`
+
+Response:
+
+```json
+[
+  [
+    "2014-12-29T17:13:05Z",
+    1
+  ],
+  [
+    "2014-12-29T17:45:54Z",
+    0
+  ],
+  [
+    "2014-12-29T18:58:05Z",
+    1
+  ],
+  ...
 ]
 ```
 

@@ -36,7 +36,8 @@
     (mc/find-maps db bot-col)
     (mc/find-maps db bot-col nil fields)))
 
-(defn get-bots-short [] (get-bots [:_id :name]))
+(defn get-bots-short [] (get-bots [:name]))
+(defn get-bots-transitions [] (get-bots [:transitions]))
 
 
 (defn get-bot-transitions [botId]
@@ -78,7 +79,7 @@
   ))
 
 
-(defn get-active-bots-intervals [] (extract-active-bots-intervals (get-bot-transitions)))
+(defn get-active-bots-intervals [] (extract-active-bots-intervals (get-bots-transitions)))
 
 ;; (apply max (map second (extract-active-bots-intervals (get-bot-transitions))))
 
