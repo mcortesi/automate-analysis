@@ -28,7 +28,7 @@ class FormSelect extends React.Component {
   render() {
     return <div className="form-group">
             <label htmlFor={this.props.id}>{this.props.label}</label>
-            <select id={this.props.id} multiple onChange={this.onChange.bind(this)}>
+            <select className="form-control" id={this.props.id} multiple onChange={this.onChange.bind(this)}>
               {
                 Object.keys(this.props.options).map((k) => {
                   if(_.contains(this.props.value, k)) {
@@ -97,23 +97,49 @@ export default class SearchForm extends React.Component {
   render() {
     return  <form role="form" onSubmit={this.handleSubmit.bind(this)}>
 
-              <FormInput id="botId" type="text" label="Bot id:"
-                value={this.state.botId} onChange={this.propertyChanged.bind(this)}/>
+              <div className="row">
+                <div className="col-md-6 col-md-offset-6">
 
-              <FormSelect id="granularity" options={Granularity} label="Granularity:"
-                value={this.state.granularity} onChange={this.propertyChanged.bind(this)}/>
+                </div>
+                <div className="col-md-6">
+                  <div className="row">
+                    <div className="col-md-8">
+                      <FormInput id="botId" type="text" label="Bot id:"
+                        value={this.state.botId} onChange={this.propertyChanged.bind(this)}/>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-md-4">
+                      <FormSelect id="granularity" options={Granularity} label="Granularity:"
+                        value={this.state.granularity} onChange={this.propertyChanged.bind(this)}/>
+                    </div>
+                    <div className="col-md-4">
+                      <FormSelect id="dimensions" options={Dimensions} label="Dimensions:"
+                        value={this.state.dimensions} onChange={this.propertyChanged.bind(this)}/>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-              <FormSelect id="dimensions" options={Dimensions} label="Dimensions:"
-                value={this.state.dimensions} onChange={this.propertyChanged.bind(this)}/>
 
-              <FormInput id="dateFrom" type="text" label="From:"
-                value={DateService.toDisplayFormat(this.state.dateFrom)} onChange={this.propertyChanged.bind(this)}/>
+              <div className="row">
+                <div className="col-md-3">
+                  <FormInput id="dateFrom" type="text" label="From:"
+                    value={DateService.toDisplayFormat(this.state.dateFrom)} onChange={this.propertyChanged.bind(this)}/>
+                </div>
+                <div className="col-md-3">
+                  <FormInput id="dateTo" type="text" label="To:"
+                    value={DateService.toDisplayFormat(this.state.dateTo)} onChange={this.propertyChanged.bind(this)}/>
+                </div>
+                <div className="col-md-2">
+                  <div className="form-group">
+                    <label>&nbsp;</label>
+                    <button type="button" className="form-control btn btn-default" onClick={this.handlePrefetch.bind(this)}>Fetch ranges</button>
+                  </div>
+                </div>
+              </div>
 
-              <FormInput id="dateTo" type="text" label="To:"
-                value={DateService.toDisplayFormat(this.state.dateTo)} onChange={this.propertyChanged.bind(this)}/>
-
-              <button type="submit" class="btn btn-default">Submit</button>
-              <button type="button" class="btn btn-default" onClick={this.handlePrefetch.bind(this)}>Fetch ranges</button>
+              <button type="submit" className="btn btn-lg btn-default">Search!</button>
             </form>
   }
 }

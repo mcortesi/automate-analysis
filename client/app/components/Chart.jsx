@@ -89,7 +89,6 @@ export default class Chart extends React.Component {
       let dimensionContent = [];
       _.forEach(this.props.data.description.dimensions, function(dimension){
         if (!_.isEmpty(dataByDimensions[dimension]) && !_.isEmpty(dataByDimensions[dimension].values[xIndex])){
-          dimensionContent.push(<br />);
           dimensionContent.push(<div>{dimension + ': ' + dataByDimensions[dimension].values[xIndex].y}</div>);
         }
       })
