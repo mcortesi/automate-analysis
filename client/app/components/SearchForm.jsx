@@ -88,6 +88,7 @@ export default class SearchForm extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     this.setState({
+      botId: nextProps.botId,
       dateFrom: nextProps.dateFrom,
       dateTo: nextProps.dateTo
     });

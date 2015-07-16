@@ -1,5 +1,6 @@
 import React from 'react';
 import SearchForm from './SearchForm';
+import BotList from './BotList';
 import Chart from './Chart';
 
 import appStore from '../stores/appStore';
@@ -33,6 +34,7 @@ export default class App extends React.Component {
     return <div>
              <h1>{this.state.status.message}</h1>
              <hr/>
+             <BotList bots={this.state.bots} onBotSelected={this.handleBotSelection.bind(this)}/>
              <SearchForm
                botId={this.state.searchParams.botId}
                dimensions={this.state.searchParams.dimensions}
@@ -48,6 +50,14 @@ export default class App extends React.Component {
            </div>
   }
 
+  handleBotSelection(botId) {
+    this.setState({
+      searchParams: {
+        botId: botId
+      }
+    });
+  }
+
   handleNewSearch(searchParams) {
     dispatcher.dispatch(appStore, { type: 'setSearchParams', state: this.state, searchParams: searchParams });
   }
@@ -61,7 +71,7 @@ export default class App extends React.Component {
 function initialState() {
   return {
     searchParams: {
-      botId: '54c7c8bb7365df0300d56bcd',
+      botId: 'lsdhflahsdfasdfasddlfhasd',
       dimensions: 'accepted',
       granularity: 'by-min',
       dateFrom: '2015-01-30T12:10:10Z',

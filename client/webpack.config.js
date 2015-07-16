@@ -68,6 +68,7 @@ if(TARGET === 'dev') {
         {
           test: /\.jsx?$/,
           loaders: ['react-hot', 'babel'],
+          exclude: /(node_modules|bower_components)/,
           include: path.resolve(ROOT_PATH, 'app'),
         },
       ],
