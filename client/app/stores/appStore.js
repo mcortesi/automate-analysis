@@ -59,7 +59,7 @@ const actions = {
      })
      .catch((error) => {
        const message = `Request to ${uri} failed with: ${error.message}`
-       dispatcher.dispatch(store, { type: 'endRequest', state: newState, botId: searchParams.botId, status: { error: true, message: message } });
+       dispatcher.dispatch(store, { type: 'endRequest', state: newState, botId: action.searchParams.botId, status: { error: true, message: message } });
      })
 
      return newState;

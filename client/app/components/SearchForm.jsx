@@ -51,7 +51,6 @@ class FormSelect extends React.Component {
                    });
 
     this.props.onChange(this.props.id, values);
-
   }
 
 }
@@ -66,8 +65,8 @@ export default class SearchForm extends React.Component {
       botId: '54c7c8bb7365df0300d56bcd',
       dimensions: 'accepted',
       granularity: 'by-min',
-      dateFrom: '2015-01-30T12:10:10',
-      dateTo: '2015-01-31T12:10:10'
+      dateFrom: '2015-01-30T12:10:10Z',
+      dateTo: '2015-01-31T12:10:10Z'
     }
   }
 
@@ -83,6 +82,15 @@ export default class SearchForm extends React.Component {
     this.props.onSearch(formData);
   }
 
+  stripTimeZone(date) {
+    const len = date.length;
+    if(date.charAt(date.length - 1) == 'Z') {
+      return date.substr(0, len - 1);
+    } else {
+      return date;
+    }
+  }
+
   render() {
     return  <form role="form" onSubmit={this.handleSubmit.bind(this)}>
 
@@ -96,10 +104,10 @@ export default class SearchForm extends React.Component {
                 value={this.state.dimensions} onChange={this.propertyChanged.bind(this)}/>
 
               <FormInput id="dateFrom" type="datetime-local" label="From:"
-                value={this.state.dateFrom} onChange={this.propertyChanged.bind(this)}/>
+                value={this.stripTimeZone(this.state.dateFrom)} onChange={this.propertyChanged.bind(this)}/>
 
               <FormInput id="dateTo" type="datetime-local" label="To:"
-                value={this.state.dateTo} onChange={this.propertyChanged.bind(this)}/>
+                value={this.stripTimeZone(this.state.dateTo)} onChange={this.propertyChanged.bind(this)}/>
 
               <button type="submit" class="btn btn-default">Submit</button>
             </form>
