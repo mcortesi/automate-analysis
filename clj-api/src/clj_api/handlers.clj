@@ -1,5 +1,6 @@
 (ns clj-api.handlers
   (:use
+   [clojure.string :only (split)]
    [compojure.core :only (GET PUT POST defroutes)])
   (:require
    [clj-api.mongo :as mongo]
@@ -24,8 +25,8 @@
 
 (defn tr-dimension [dimension-param]
   (case dimension-param
-    "accepted"   :accepted
-    "rejected"    :rejected
+    "accepted"  :accepted
+    "rejected"  :rejected
     "processed" :processed))
 
 
@@ -78,7 +79,7 @@
   [{:keys [bots dimensions granularity from to]
       or {dimensions ["replies"] granularity "by-min"}}]
   (let
-    [as-vector (fn [x] (if (vector? x) x [x]))]
+    [as-vector (fn [x] (split x #","))]
   {
    :from (parse-date from)
    :to (parse-date to)
