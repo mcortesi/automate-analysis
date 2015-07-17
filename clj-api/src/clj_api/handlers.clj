@@ -92,6 +92,7 @@
 
 (defroutes routes
   (GET "/api/system/active-bots" [] (response/response (mongo/get-active-bots-intervals)))
+  (GET "/api/system/active-bots-by-kind" [] (response/response (mongo/get-active-bots-intervals-by-kind)))
   (GET "/api/bots" [] (response/response (mongo/get-bots-short)))
   (GET "/api/bots/buzz-data" [& params]
        (response/response (get-stats (normalize-parameters params))))

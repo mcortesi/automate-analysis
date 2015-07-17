@@ -68,6 +68,7 @@ List of endpoints:
 * Get Bots: `/api/bots`
 * Get Bot transitions: `/api/bots/:bot/transitions`
 * Get System Active Bots: `/api/system/active-bots`
+* Get System Active Bots by kind: `/api/system/active-bots-by-kind`
 
 
 ### Get Bot Stats
@@ -192,6 +193,46 @@ Response:
   ],
   ...
 ]
+```
+
+```
+
+## Get System active bots by kind
+
+Get the data series of amount of active bots grouped by kind.
+
+It returns a list of pairs with `date` and `amount of active bots`.
+
+Url: `/api/system/active-bots-by-kind`
+
+Response:
+
+```json
+{
+  "autograph": [
+    [
+      "2014-12-29T20:09:20Z",
+      1
+    ],
+    [
+      "2014-12-31T17:34:50Z",
+      0
+    ],
+    ...
+  ],
+  "reply": [
+    [
+      "2014-12-29T20:09:20Z",
+      1
+    ],
+    [
+      "2014-12-31T17:34:50Z",
+      0
+    ],
+    ...
+  ]
+}
+
 ```
 
 

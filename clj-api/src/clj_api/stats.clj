@@ -1,4 +1,5 @@
 (ns clj-api.stats
+  (:use [clj-api.utils :only [map-values]])
   (:require
      [taoensso.carmine :as car :refer (wcar)]
      [clj-time.core :as t]
@@ -81,8 +82,7 @@
          (agregate-stats
             (redis-fetch-fields-for (redis-key-for bot kind) redis-fields)
             granularity))
-     stats-by-kind
-       (into {} (for [kind kinds] [kind (stats-for-kind kind)]))
+     stats-by-kind (map-values stats-for-kind kinds)
      ]
     stats-by-kind
     ))

@@ -1,4 +1,5 @@
 (ns clj-api.mongo
+  (:use [clj-api.utils :only [map-values]])
   (:require
             [monger.json]
             [monger.core :as mg]
@@ -36,16 +37,18 @@
     (mc/find-maps db bot-col)
     (mc/find-maps db bot-col nil fields)))
 
-(defn get-bots-short [] (get-bots [:name]))
+(defn get-bots-short
+  "Returns all bots short representation (only name & id)"
+  [] (get-bots [:name]))
 (defn get-bots-transitions [] (get-bots [:transitions]))
 
 
 (defn get-bot-transitions [botId]
+  "Returns all the transitions for a given botId"
   (let
     [bot (get-bot botId [:transitions])]
     (map #(select-keys % [:date :to]) (:transitions bot))))
 
-(get-bot-transitions "5466504d305858020006c7bd")
 
 (defn extract-processing-intervals [bots]
   "Given a seq of bots with their transitions, it returns a sorted list of intervals [from to]
@@ -81,9 +84,8 @@
 
 (defn get-active-bots-intervals [] (extract-active-bots-intervals (get-bots-transitions)))
 
-;; (apply max (map second (extract-active-bots-intervals (get-bot-transitions))))
-
-
-;; (keys  (mc/find-one-as-map db bot-col nil))
-
-;; (get-bots)
+(defn get-active-bots-intervals-by-kind []
+  (let
+    [bots (get-bots [:action.kind :transitions])
+     bots-by-kind (group-by (comp keyword #(get-in % [:action :kind])) bots)]
+    (map-values extract-active-bots-intervals bots-by-kind)))
