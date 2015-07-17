@@ -51,13 +51,13 @@ export default class App extends React.Component {
                onSearch={this.handleNewSearch.bind(this)}
                onPrefetchRanges={this.prefetchRanges.bind(this)}/>
 
-             <h1>Response</h1>
-             <hr/>
-             <div>{JSON.stringify(this.state)}</div>
-
              <h1>Chart</h1>
              <hr/>
              {this.state.result ? <Chart data={this.state.result}/> : <span>No data</span>}
+
+             <h1>Response</h1>
+             <hr/>
+             <div>{JSON.stringify(this.state)}</div>
            </div>
   }
 
