@@ -82,7 +82,8 @@
          (agregate-stats
             (redis-fetch-fields-for (redis-key-for bot kind) redis-fields)
             granularity))
-     stats-by-kind (map-values stats-for-kind kinds)
+     stats-by-kind
+       (into {} (for [kind kinds] [kind (stats-for-kind kind)]))
      ]
     stats-by-kind
     ))
